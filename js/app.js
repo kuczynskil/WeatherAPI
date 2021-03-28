@@ -50,7 +50,7 @@ async function createNewWeatherDiv(cityName) {
 function setWeatherInfoForToday(weatherFromAPI, divElement) {
     divElement.querySelector(".city__name").innerHTML = weatherFromAPI.location.name;
     divElement.querySelector(".weather__icon").innerHTML =
-        `<img style="width: 120px" src="${weatherFromAPI.current.condition.icon}"/>`;
+        `<img style="width: 110px" src="${weatherFromAPI.current.condition.icon}"/>`;
     divElement.querySelector(".temperature__value").innerHTML = weatherFromAPI.current.temp_c;
     divElement.querySelector(".pressure__value").innerHTML = `${weatherFromAPI.current.pressure_mb} hPa`;
     divElement.querySelector(".humidity__value").innerHTML = `${weatherFromAPI.current.humidity} %`;
