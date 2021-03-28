@@ -34,32 +34,32 @@ const weatherAPI = new API();
 
 const weatherDivTemplate = document.querySelector(".module__weather");
 
-const weatherTemplateCloned = weatherDivTemplate.cloneNode(true);
 
 async function createNewWeatherDiv(cityName) {
+    const weatherTemplateCloned = weatherDivTemplate.cloneNode(true);
     let weatherFromAPI = await weatherAPI.getWeather(cityName);
 
-    setWeatherInfoForToday(weatherFromAPI);
-    setUpcomingDaysForecast(weatherFromAPI);
-    addRemoveButtonEvent();
+    setWeatherInfoForToday(weatherFromAPI,weatherTemplateCloned);
+    setUpcomingDaysForecast(weatherFromAPI,weatherTemplateCloned);
+    addRemoveButtonEvent(weatherTemplateCloned);
 
     weatherTemplateCloned.hidden = false;
     document.querySelector("#app").appendChild(weatherTemplateCloned);
 }
 
-function setWeatherInfoForToday(weatherFromAPI) {
-    weatherTemplateCloned.querySelector(".city__name").innerHTML = weatherFromAPI.location.name;
-    weatherTemplateCloned.querySelector(".weather__icon").innerHTML =
+function setWeatherInfoForToday(weatherFromAPI, divElement) {
+    divElement.querySelector(".city__name").innerHTML = weatherFromAPI.location.name;
+    divElement.querySelector(".weather__icon").innerHTML =
         `<img style="width: 120px" src="${weatherFromAPI.current.condition.icon}"/>`;
-    weatherTemplateCloned.querySelector(".temperature__value").innerHTML = weatherFromAPI.current.temp_c;
-    weatherTemplateCloned.querySelector(".pressure__value").innerHTML = `${weatherFromAPI.current.pressure_mb} hPa`;
-    weatherTemplateCloned.querySelector(".humidity__value").innerHTML = `${weatherFromAPI.current.humidity} %`;
-    weatherTemplateCloned.querySelector(".wind-speed__value")
+    divElement.querySelector(".temperature__value").innerHTML = weatherFromAPI.current.temp_c;
+    divElement.querySelector(".pressure__value").innerHTML = `${weatherFromAPI.current.pressure_mb} hPa`;
+    divElement.querySelector(".humidity__value").innerHTML = `${weatherFromAPI.current.humidity} %`;
+    divElement.querySelector(".wind-speed__value")
         .innerHTML = `${Math.round(weatherFromAPI.current.wind_kph * 100 / 36) / 10} m/s`;
 }
 
-function setUpcomingDaysForecast(weatherJson) {
-    const forecastList = weatherTemplateCloned.querySelector(".weather__forecast");
+function setUpcomingDaysForecast(weatherJson, divElement) {
+    const forecastList = divElement.querySelector(".weather__forecast");
     forecastList.innerHTML = "";
 
     weatherJson.forecast.forecastday.forEach(el => {
@@ -74,11 +74,19 @@ function setUpcomingDaysForecast(weatherJson) {
     });
 }
 
-function addRemoveButtonEvent() {
-    weatherTemplateCloned.querySelector(".btn--close").addEventListener("click", function () {
+function addRemoveButtonEvent(divElement) {
+    divElement.querySelector(".btn--close").addEventListener("click", function () {
         this.parentElement.remove();
     })
 }
 
+const findCityForm = document.querySelector(".find-city");
+findCityForm.querySelector("button").addEventListener("click", ev => {
+    const cityName = findCityForm.querySelector("#search").value;
+    ev.preventDefault();
+    addCityForm.hidden = true;
+    console.log(cityName);
+    createNewWeatherDiv(cityName);
+})
 createNewWeatherDiv("auto:ip");
 
