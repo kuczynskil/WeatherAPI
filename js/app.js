@@ -41,6 +41,7 @@ async function createNewWeatherDiv(cityName) {
 
     setWeatherInfoForToday(weatherFromAPI);
     setUpcomingDaysForecast(weatherFromAPI);
+    addRemoveButtonEvent();
 
     weatherTemplateCloned.hidden = false;
     document.querySelector("#app").appendChild(weatherTemplateCloned);
@@ -48,6 +49,8 @@ async function createNewWeatherDiv(cityName) {
 
 function setWeatherInfoForToday(weatherFromAPI) {
     weatherTemplateCloned.querySelector(".city__name").innerHTML = weatherFromAPI.location.name;
+    weatherTemplateCloned.querySelector(".weather__icon").innerHTML =
+        `<img style="width: 120px" src="${weatherFromAPI.current.condition.icon}"/>`;
     weatherTemplateCloned.querySelector(".temperature__value").innerHTML = weatherFromAPI.current.temp_c;
     weatherTemplateCloned.querySelector(".pressure__value").innerHTML = `${weatherFromAPI.current.pressure_mb} hPa`;
     weatherTemplateCloned.querySelector(".humidity__value").innerHTML = `${weatherFromAPI.current.humidity} %`;
@@ -64,11 +67,18 @@ function setUpcomingDaysForecast(weatherJson) {
 
         liElement.innerHTML = `
           <span class="day">${new Date(el.date).toLocaleDateString("pl-PL", {weekday: 'long'})}</span> 
-          <img src="${el.day.condition.icon}"/>
+          <img style="padding: 10px;" src="${el.day.condition.icon}"/>
           <span class="temperature"><span class="temperature__value">${el.day.maxtemp_c}</span>&deg;C</span>`;
 
         forecastList.appendChild(liElement);
     });
 }
 
+function addRemoveButtonEvent() {
+    weatherTemplateCloned.querySelector(".btn--close").addEventListener("click", function () {
+        this.parentElement.remove();
+    })
+}
+
 createNewWeatherDiv("auto:ip");
+
