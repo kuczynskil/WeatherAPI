@@ -39,14 +39,36 @@ const weatherTemplateCloned = weatherDivTemplate.cloneNode(true);
 async function createNewWeatherDiv(cityName) {
     let weatherFromAPI = await weatherAPI.getWeather(cityName);
 
+    setWeatherInfoForToday(weatherFromAPI);
+    setUpcomingDaysForecast(weatherFromAPI);
+
+    weatherTemplateCloned.hidden = false;
+    document.querySelector("#app").appendChild(weatherTemplateCloned);
+}
+
+function setWeatherInfoForToday(weatherFromAPI) {
     weatherTemplateCloned.querySelector(".city__name").innerHTML = weatherFromAPI.location.name;
     weatherTemplateCloned.querySelector(".temperature__value").innerHTML = weatherFromAPI.current.temp_c;
     weatherTemplateCloned.querySelector(".pressure__value").innerHTML = `${weatherFromAPI.current.pressure_mb} hPa`;
     weatherTemplateCloned.querySelector(".humidity__value").innerHTML = `${weatherFromAPI.current.humidity} %`;
     weatherTemplateCloned.querySelector(".wind-speed__value")
         .innerHTML = `${Math.round(weatherFromAPI.current.wind_kph * 100 / 36) / 10} m/s`;
-
-    weatherTemplateCloned.hidden = false;
-    document.querySelector("#app").appendChild(weatherTemplateCloned);
 }
+
+function setUpcomingDaysForecast(weatherJson) {
+    const forecastList = weatherTemplateCloned.querySelector(".weather__forecast");
+    forecastList.innerHTML = "";
+
+    weatherJson.forecast.forecastday.forEach(el => {
+        let liElement = document.createElement("li");
+
+        liElement.innerHTML = `
+          <span class="day">${new Date(el.date).toLocaleDateString("pl-PL", {weekday: 'long'})}</span> 
+          <img src="${el.day.condition.icon}"/>
+          <span class="temperature"><span class="temperature__value">${el.day.maxtemp_c}</span>&deg;C</span>`;
+
+        forecastList.appendChild(liElement);
+    });
+}
+
 createNewWeatherDiv("auto:ip");
