@@ -82,11 +82,11 @@ function addRemoveButtonEvent(divElement) {
 
 const findCityForm = document.querySelector(".find-city");
 findCityForm.querySelector("button").addEventListener("click", ev => {
-    const cityName = findCityForm.querySelector("#search").value;
     ev.preventDefault();
+    const cityName = findCityForm.querySelector("#search").value;
     addCityForm.hidden = true;
-    console.log(cityName);
     createNewWeatherDiv(cityName);
+    findCityForm.querySelector("#search").value = "";
 })
 createNewWeatherDiv("auto:ip");
 
