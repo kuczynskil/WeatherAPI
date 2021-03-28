@@ -5,3 +5,9 @@ addCityButton.addEventListener("click", function() {
     const isHidden = addCityForm.hidden;
     isHidden ? addCityForm.hidden = false : addCityForm.hidden = true;
 })
+
+const closeCityFormButton = addCityForm.querySelector(".btn--close");
+
+closeCityFormButton.addEventListener("click", function () {
+    addCityForm.hidden = true;
+})
