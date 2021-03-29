@@ -22,7 +22,7 @@ class API {
     async getWeather(city) {
         try {
             city = Diacritics.clean(city);
-            const response = await fetch(`${this.url}${this.weatherAPI_KEY}&q=${city}&days=5`);
+            const response = await fetch(`${this.url}${this.weatherAPI_KEY}&q=${city}&days=3`);
             return await response.json();
         } catch (e) {
             console.log("error: " + e);
@@ -35,17 +35,24 @@ const weatherAPI = new API();
 class Forecast {
     weatherDivTemplate = document.querySelector(".module__weather");
 
-
     async createNewWeatherDiv(cityName) {
-        const weatherTemplateCloned = this.weatherDivTemplate.cloneNode(true);
-        let weatherFromAPI = await weatherAPI.getWeather(cityName);
+        try {
+            const weatherTemplateCloned = this.weatherDivTemplate.cloneNode(true);
+            document.body.classList = "loading";
+            let weatherFromAPI = await weatherAPI.getWeather(cityName);
+            document.body.classList = "";
 
-        this.setWeatherInfoForToday(weatherFromAPI,weatherTemplateCloned);
-        this.setUpcomingDaysForecast(weatherFromAPI,weatherTemplateCloned);
-        this.addRemoveButtonEvent(weatherTemplateCloned);
+            this.setWeatherInfoForToday(weatherFromAPI, weatherTemplateCloned);
+            this.setUpcomingDaysForecast(weatherFromAPI, weatherTemplateCloned);
+            this.addRemoveButtonEvent(weatherTemplateCloned);
 
-        weatherTemplateCloned.hidden = false;
-        document.querySelector("#app").appendChild(weatherTemplateCloned);
+            weatherTemplateCloned.hidden = false;
+            document.querySelector("#app").appendChild(weatherTemplateCloned);
+        } catch (err) {
+            console.log("error: " + err);
+            document.body.classList = "";
+        }
+
     }
 
     setWeatherInfoForToday(weatherFromAPI, divElement) {
