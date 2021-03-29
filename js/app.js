@@ -32,61 +32,66 @@ class API {
 
 const weatherAPI = new API();
 
-const weatherDivTemplate = document.querySelector(".module__weather");
+class Forecast {
+    weatherDivTemplate = document.querySelector(".module__weather");
 
 
-async function createNewWeatherDiv(cityName) {
-    const weatherTemplateCloned = weatherDivTemplate.cloneNode(true);
-    let weatherFromAPI = await weatherAPI.getWeather(cityName);
+    async createNewWeatherDiv(cityName) {
+        const weatherTemplateCloned = this.weatherDivTemplate.cloneNode(true);
+        let weatherFromAPI = await weatherAPI.getWeather(cityName);
 
-    setWeatherInfoForToday(weatherFromAPI,weatherTemplateCloned);
-    setUpcomingDaysForecast(weatherFromAPI,weatherTemplateCloned);
-    addRemoveButtonEvent(weatherTemplateCloned);
+        this.setWeatherInfoForToday(weatherFromAPI,weatherTemplateCloned);
+        this.setUpcomingDaysForecast(weatherFromAPI,weatherTemplateCloned);
+        this.addRemoveButtonEvent(weatherTemplateCloned);
 
-    weatherTemplateCloned.hidden = false;
-    document.querySelector("#app").appendChild(weatherTemplateCloned);
-}
+        weatherTemplateCloned.hidden = false;
+        document.querySelector("#app").appendChild(weatherTemplateCloned);
+    }
 
-function setWeatherInfoForToday(weatherFromAPI, divElement) {
-    divElement.querySelector(".city__name").innerHTML = weatherFromAPI.location.name;
-    divElement.querySelector(".weather__icon").innerHTML =
-        `<img style="width: 110px" src="${weatherFromAPI.current.condition.icon}"/>`;
-    divElement.querySelector(".temperature__value").innerHTML = weatherFromAPI.current.temp_c;
-    divElement.querySelector(".pressure__value").innerHTML = `${weatherFromAPI.current.pressure_mb} hPa`;
-    divElement.querySelector(".humidity__value").innerHTML = `${weatherFromAPI.current.humidity} %`;
-    divElement.querySelector(".wind-speed__value")
-        .innerHTML = `${Math.round(weatherFromAPI.current.wind_kph * 100 / 36) / 10} m/s`;
-}
+    setWeatherInfoForToday(weatherFromAPI, divElement) {
+        divElement.querySelector(".city__name").innerHTML = weatherFromAPI.location.name;
+        divElement.querySelector(".weather__icon").innerHTML =
+            `<img style="width: 110px" src="${weatherFromAPI.current.condition.icon}"/>`;
+        divElement.querySelector(".temperature__value").innerHTML = weatherFromAPI.current.temp_c;
+        divElement.querySelector(".pressure__value").innerHTML = `${weatherFromAPI.current.pressure_mb} hPa`;
+        divElement.querySelector(".humidity__value").innerHTML = `${weatherFromAPI.current.humidity} %`;
+        divElement.querySelector(".wind-speed__value")
+            .innerHTML = `${Math.round(weatherFromAPI.current.wind_kph * 100 / 36) / 10} m/s`;
+    }
 
-function setUpcomingDaysForecast(weatherJson, divElement) {
-    const forecastList = divElement.querySelector(".weather__forecast");
-    forecastList.innerHTML = "";
+    setUpcomingDaysForecast(weatherJson, divElement) {
+        const forecastList = divElement.querySelector(".weather__forecast");
+        forecastList.innerHTML = "";
 
-    weatherJson.forecast.forecastday.forEach(el => {
-        let liElement = document.createElement("li");
+        weatherJson.forecast.forecastday.forEach(el => {
+            let liElement = document.createElement("li");
 
-        liElement.innerHTML = `
+            liElement.innerHTML = `
           <span class="day">${new Date(el.date).toLocaleDateString("pl-PL", {weekday: 'long'})}</span> 
           <img style="padding: 10px;" src="${el.day.condition.icon}"/>
           <span class="temperature"><span class="temperature__value">${el.day.maxtemp_c}</span>&deg;C</span>`;
 
-        forecastList.appendChild(liElement);
-    });
+            forecastList.appendChild(liElement);
+        });
+    }
+
+    addRemoveButtonEvent(divElement) {
+        divElement.querySelector(".btn--close").addEventListener("click", function () {
+            this.parentElement.remove();
+        })
+    }
 }
 
-function addRemoveButtonEvent(divElement) {
-    divElement.querySelector(".btn--close").addEventListener("click", function () {
-        this.parentElement.remove();
-    })
-}
+const forecast = new Forecast();
 
 const findCityForm = document.querySelector(".find-city");
 findCityForm.querySelector("button").addEventListener("click", ev => {
     ev.preventDefault();
     const cityName = findCityForm.querySelector("#search").value;
     addCityForm.hidden = true;
-    createNewWeatherDiv(cityName);
+    forecast.createNewWeatherDiv(cityName);
     findCityForm.querySelector("#search").value = "";
 })
-createNewWeatherDiv("auto:ip");
+
+forecast.createNewWeatherDiv("auto:ip");
 
